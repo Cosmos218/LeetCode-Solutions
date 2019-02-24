@@ -4,6 +4,7 @@
 
 - [LeetCode](#leetcode)
     - [1.Two Sum](#1two-sum)
+    - [3. Longest Substring Without Repeating Characters](#3-longest-substring-without-repeating-characters)
     - [14. Longest Common Prefix](#14-longest-common-prefix)
     - [15. 3Sum](#15-3sum)
     - [26. Remove Duplicates from Sorted Array](#26-remove-duplicates-from-sorted-array)
@@ -11,8 +12,12 @@
     - [66. Plus One](#66-plus-one)
     - [73. Set Matrix Zeroes](#73-set-matrix-zeroes)
     - [88. Merge Sorted Array](#88-merge-sorted-array)
+    - [98. Validate Binary Search Tree](#98-validate-binary-search-tree)
+    - [104. Maximum Depth of Binary Tree](#104-maximum-depth-of-binary-tree)
+    - [121. Best Time to Buy and Sell Stock](#121-best-time-to-buy-and-sell-stock)
     - [122. Best Time to Buy and Sell Stock II](#122-best-time-to-buy-and-sell-stock-ii)
     - [136. Single Number](#136-single-number)
+    - [167. Two Sum II - Input array is sorted](#167-two-sum-ii---input-array-is-sorted)
     - [278. First Bad Version(binary search)](#278-first-bad-versionbinary-search)
     - [283. Move Zeroes](#283-move-zeroes)
     - [350. Intersection of Two Arrays II](#350-intersection-of-two-arrays-ii)
@@ -53,6 +58,30 @@ class Solution:
 ```
 
 核心在于遍历的时候记录与当前数相加可以得到target的数，并放于字典中。如果后面的数有，就能立刻找到并返回index。
+
+## 3. Longest Substring Without Repeating Characters ##
+
+```python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        i, j, maxlength = 0, 0, 0
+        subset = set()
+        while i < len(s) and j < len(s):
+            if s[j] not in subset:
+                subset.add(s[j])
+                j += 1
+                maxlength = max(maxlength, j-i)
+            else:
+                subset.remove(s[i])
+                i += 1
+        return maxlength
+```
+
+核心要点：
+
+1. 双指针指代substring范围
+2. 双指针内的substring维持一个set，每次check右指针所指元素是否存在于set中，若存在则减小左指针，否则增加右指针。
+3. 左右指针包含的范围被称为sliding window, 我们需要记录该window的最大范围作为返回值
 
 ## 14. Longest Common Prefix ##
 
@@ -283,6 +312,82 @@ class Solution:
 
 核心思想是从后往前放元素，这样就能保证num1的元素不会被覆盖掉。注意最后一个while只需要考虑nums2因为nums1的元素本来就在那里。
 
+## 98. Validate Binary Search Tree ##
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isValidBST(self, root: TreeNode) -> bool:
+        stack, previous = [], float('-Inf')
+        
+        while stack or root:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            if root.val <= previous:
+                return False
+            previous = root.val
+            root = root.right
+        
+        return True
+```
+
+法1：前序遍历输出必须是从大到小。法2：递归调用，维持一个上界和下界比较
+
+## 104. Maximum Depth of Binary Tree ##
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        return max(self.maxDepth(root.left) + 1, self.maxDepth(root.right) + 1)
+
+```
+
+## 121. Best Time to Buy and Sell Stock ##
+
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+If you were only permitted to complete at most one transaction (i.e., buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+
+Note that you cannot sell a stock before you buy one.
+
+Example 1:
+
+Input: [7,1,5,3,6,4]
+Output: 5
+Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+             Not 7-1 = 6, as selling price needs to be larger than buying price.
+
+```python
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        maxProfit, minPrice = 0, float('+Inf')
+        for price in prices:
+            if price < minPrice:
+                minPrice = price
+            if price - minPrice > maxProfit:
+                maxProfit = price - minPrice
+        return maxProfit
+```
+
+
+
 ## 122. Best Time to Buy and Sell Stock II ##
 
 ``` java
@@ -335,6 +440,71 @@ class Solution {
 ```
 
 位运算骚操作之异或消掉两个相同位
+
+## 167. Two Sum II - Input array is sorted ##
+
+Given an array of integers that is already sorted in ascending order, find two numbers such that they add up to a specific target number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2.
+
+Note:
+
+Your returned answers (both index1 and index2) are not zero-based.
+You may assume that each input would have exactly one solution and you may not use the same element twice.
+
+```python
+class Solution:
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        dic = {}
+        for i in range(len(numbers)):
+            if numbers[i] not in dic:
+                dic[target - numbers[i]] = i
+            else:
+                return [dic[numbers[i]] + 1, i + 1]
+```
+
+A improved python-HashMap solution, using enumerate:
+
+```python
+# dictionary
+def twoSum2(self, numbers, target):
+    dic = {}
+    for i, num in enumerate(numbers):
+        if target-num in dic:
+            return [dic[target-num]+1, i+1]
+        dic[num] = i
+```
+
+Other solution using two pointers and binary search:
+
+```python 
+# two-pointer
+def twoSum1(self, numbers, target):
+    l, r = 0, len(numbers)-1
+    while l < r:
+        s = numbers[l] + numbers[r]
+        if s == target:
+            return [l+1, r+1]
+        elif s < target:
+            l += 1
+        else:
+            r -= 1
+
+
+# binary search        
+def twoSum(self, numbers, target):
+    for i in xrange(len(numbers)):
+        l, r = i+1, len(numbers)-1
+        tmp = target - numbers[i]
+        while l <= r:
+            mid = l + (r-l)//2
+            if numbers[mid] == tmp:
+                return [i+1, mid+1]
+            elif numbers[mid] < tmp:
+                l = mid+1
+            else:
+                r = mid-1
+```
 
 ## 278. First Bad Version(binary search) ##
 

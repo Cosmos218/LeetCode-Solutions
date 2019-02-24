@@ -1,4 +1,4 @@
-02/22/2019:
+02/21/2019:
 review:
 1
 26
@@ -10,10 +10,19 @@ review:
 283
 350
 
-02/23/2019:
+02/22/2019:
 review:
 14. Longest Common Prefix
 344. Reverse String
 15. 3Sum
 73. Set Matrix Zeroes
 49. Group Anagrams
+
+02/23/2019:
+review:
+104. Maximum Depth of Binary Tree
+98. Validate Binary Search Tree
+
+new:
+3. Longest Substring Without Repeating Characters
+121. Best Time to Buy and Sell Stock
