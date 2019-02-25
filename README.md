@@ -10,6 +10,7 @@
     - [26. Remove Duplicates from Sorted Array](#26-remove-duplicates-from-sorted-array)
     - [49. Group Anagrams](#49-group-anagrams)
     - [66. Plus One](#66-plus-one)
+    - [69. Sqrt(x)](#69-sqrtx)
     - [73. Set Matrix Zeroes](#73-set-matrix-zeroes)
     - [88. Merge Sorted Array](#88-merge-sorted-array)
     - [98. Validate Binary Search Tree](#98-validate-binary-search-tree)
@@ -18,9 +19,17 @@
     - [122. Best Time to Buy and Sell Stock II](#122-best-time-to-buy-and-sell-stock-ii)
     - [136. Single Number](#136-single-number)
     - [167. Two Sum II - Input array is sorted](#167-two-sum-ii---input-array-is-sorted)
+    - [169. Majority Element](#169-majority-element)
+    - [219. Contains Duplicate II](#219-contains-duplicate-ii)
+    - [268. Missing Number](#268-missing-number)
     - [278. First Bad Version(binary search)](#278-first-bad-versionbinary-search)
     - [283. Move Zeroes](#283-move-zeroes)
+    - [349. Intersection of Two Arrays](#349-intersection-of-two-arrays)
     - [350. Intersection of Two Arrays II](#350-intersection-of-two-arrays-ii)
+    - [414. Third Maximum Number](#414-third-maximum-number)
+    - [448. Find All Numbers Disappeared in an Array](#448-find-all-numbers-disappeared-in-an-array)
+    - [485. Max Consecutive Ones](#485-max-consecutive-ones)
+    - [532. K-diff Pairs in an Array](#532-k-diff-pairs-in-an-array)
 
 <!-- /TOC -->
 
@@ -249,6 +258,39 @@ class Solution:
 ```
 
 基本数组操作
+
+## 69. Sqrt(x) ##
+
+```python
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        lo, hi = 0, x
+        while lo < hi:
+            mid = lo + (hi - lo + 1) // 2
+            if mid * mid <= x:
+                lo = mid
+            else:
+                hi = mid - 1
+        return int(lo)
+```
+
+binary search to find the rightmost
+为什么不能用另一种方法？
+
+```python
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        lo, hi = 0, x
+        while lo < hi:
+            mid = lo + (hi - lo) // 2
+            if mid * mid <= x:
+                lo = mid + 1
+            else:
+                hi = mid
+        return int(lo) - 1
+```
+
+因为这个无法处理x = 0 的情况，即初始时lo = hi。
 
 ## 73. Set Matrix Zeroes ##
 
@@ -506,6 +548,57 @@ def twoSum(self, numbers, target):
                 r = mid-1
 ```
 
+## 169. Majority Element ##
+
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+```python
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        dic = {}
+        n = len(nums)
+        for num in nums:
+            dic[num] = dic.get(num, 0) + 1
+            if dic[num] > n // 2:
+                return num
+```
+
+**Note**: 记住python dic.get(num, 0)这个操作，是如果有key就取出，没有就置零并返回0
+
+## 219. Contains Duplicate II ##
+
+Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+
+```python
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        dic = {}
+        for i, num in enumerate(nums):
+            if num not in dic:
+                dic[num] = i
+            else:
+                if i - dic[num] <= k:
+                    return True
+                else:
+                    dic[num] = i
+        return False
+```
+
+利用enumerate提高代码简洁性
+
+## 268. Missing Number ##
+
+Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
+
+```python
+class Solution:
+    def missingNumber(self, nums: List[int]) -> int:
+        result = len(nums)
+        for i, num in enumerate(nums):
+            result ^= i ^ num
+        return result
+```
+
 ## 278. First Bad Version(binary search) ##
 
 ```java
@@ -629,6 +722,28 @@ class Solution:
 
 第一个方法想复杂了，其实就是双指针，第一个指针指向要赋值的index，第二个指针永远指向非0index，最后剩下的没赋值的赋值为0即可
 
+## 349. Intersection of Two Arrays ##
+
+Given two arrays, write a function to compute their intersection.
+
+Example 1:
+
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2]
+
+```python
+class Solution:
+    def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        set1 = set()
+        result = set()
+        for num in nums1:
+            set1.add(num)
+        for num in nums2:
+            if num in set1:
+                result.add(num)
+        return list(result)
+```
+
 ## 350. Intersection of Two Arrays II ##
 
 ```java
@@ -681,3 +796,114 @@ class Solution:
 ```
 
 用python十分简洁，利用dic
+
+## 414. Third Maximum Number ##
+
+Given a non-empty array of integers, return the third maximum number in this array. If it does not exist, return the maximum number. The time complexity must be in O(n).
+
+```python
+class Solution:
+    def thirdMax(self, nums: List[int]) -> int:
+        v = [float('-Inf'), float('-Inf'), float('-Inf')]
+        for num in nums:
+            if num not in v:
+                if num > v[0]: 
+                    v = [num, v[0], v[1]]
+                elif num > v[1]:
+                    v = [v[0], num, v[1]]
+                elif num > v[2]:
+                    v = [v[0], v[1], num]
+        if float('-Inf') in v:
+            return v[0]
+        else:
+            return v[2]
+```
+
+核心在于用一个数组维持最大的三个数，不断更新
+
+## 448. Find All Numbers Disappeared in an Array ##
+
+Given an array of integers where 1 ≤ a[i] ≤ n (n = size of array), some elements appear twice and others appear once.
+
+Find all the elements of [1, n] inclusive that do not appear in this array.
+
+Could you do it without extra space and in O(n) runtime? You may assume the returned list does not count as extra space.
+
+```python
+class Solution:
+    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:
+        for i, num in enumerate(nums):
+            absNum = abs(num)
+            if nums[absNum - 1] > 0:
+                nums[absNum - 1] = -nums[absNum - 1]
+        result = []
+        for i, num in enumerate(nums):
+            if num > 0:
+                result.append(i + 1)
+        return result
+```
+
+## 485. Max Consecutive Ones ##
+
+Given a binary array, find the maximum number of consecutive 1s in this array
+
+```python
+class Solution:
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        maxNum = 0
+        cnt = 0
+        for num in nums:
+            if num == 1:
+                cnt += 1
+                if cnt > maxNum:
+                    maxNum = cnt
+            else:
+                cnt = 0
+        return maxNum
+```
+
+## 532. K-diff Pairs in an Array ##
+
+Given an array of integers and an integer k, you need to find the number of unique k-diff pairs in the array. Here a k-diff pair is defined as an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k.
+
+```python
+# Naive solution
+class Solution:
+    def findPairs(self, nums: List[int], k: int) -> int:
+        setNums = set(nums)
+        if k == 0:
+            return sum(v>1 for v in collections.Counter(nums).values())
+        nums = sorted(list(setNums))
+        cnt = 0
+        for i in range(0, len(nums) - 1, 1):
+            for j in range(i+1, len(nums), 1):
+                if nums[j] - nums[i] == k:
+                    cnt += 1
+                elif nums[j] - nums[i] > k:
+                    break
+        return cnt
+```
+
+```python
+# Improved solution
+class Solution:
+    def findPairs(self, nums: List[int], k: int) -> int:
+        dic = {}
+        for num in nums:
+            dic[num] = dic.get(num, 0) + 1
+        cnt = 0
+        if k == 0:
+            for num in dic:
+                if dic[num] > 1:
+                    cnt += 1
+        elif k > 0:
+            for num in dic:
+                if num + k in dic:
+                    cnt += 1
+        else:
+            return 0
+        return cnt
+```
+
+数组还是要想到hashmap
+

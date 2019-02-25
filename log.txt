@@ -26,3 +26,17 @@ review:
 new:
 3. Longest Substring Without Repeating Characters
 121. Best Time to Buy and Sell Stock
+167. Two Sum II - Input array is sorted
+
+02/24/2019:
+169. Majority Element
+219. Contains Duplicate II
+268. Missing Number
+414. Third Maximum Number
+
+02/25/2019
+448. Find All Numbers Disappeared in an Array
+485. Max Consecutive Ones
+532. K-diff Pairs in an Array
+69. Sqrt(x)
+349. Intersection of Two Arrays
