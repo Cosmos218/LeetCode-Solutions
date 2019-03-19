@@ -5,21 +5,28 @@
 - [LeetCode](#leetcode)
     - [1.Two Sum](#1two-sum)
     - [3. Longest Substring Without Repeating Characters](#3-longest-substring-without-repeating-characters)
+    - [11. Container With Most Water](#11-container-with-most-water)
     - [14. Longest Common Prefix](#14-longest-common-prefix)
     - [15. 3Sum](#15-3sum)
+    - [16. 3Sum Closest](#16-3sum-closest)
     - [26. Remove Duplicates from Sorted Array](#26-remove-duplicates-from-sorted-array)
     - [49. Group Anagrams](#49-group-anagrams)
+    - [53. Maximum Subarray](#53-maximum-subarray)
     - [66. Plus One](#66-plus-one)
     - [69. Sqrt(x)](#69-sqrtx)
+    - [70. Climbing Stairs](#70-climbing-stairs)
     - [73. Set Matrix Zeroes](#73-set-matrix-zeroes)
     - [88. Merge Sorted Array](#88-merge-sorted-array)
     - [98. Validate Binary Search Tree](#98-validate-binary-search-tree)
     - [104. Maximum Depth of Binary Tree](#104-maximum-depth-of-binary-tree)
+    - [118. Pascal's Triangle](#118-pascals-triangle)
+    - [119. Pascal's Triangle II](#119-pascals-triangle-ii)
     - [121. Best Time to Buy and Sell Stock](#121-best-time-to-buy-and-sell-stock)
     - [122. Best Time to Buy and Sell Stock II](#122-best-time-to-buy-and-sell-stock-ii)
     - [136. Single Number](#136-single-number)
     - [167. Two Sum II - Input array is sorted](#167-two-sum-ii---input-array-is-sorted)
     - [169. Majority Element](#169-majority-element)
+    - [198. House Robber](#198-house-robber)
     - [219. Contains Duplicate II](#219-contains-duplicate-ii)
     - [268. Missing Number](#268-missing-number)
     - [278. First Bad Version(binary search)](#278-first-bad-versionbinary-search)
@@ -92,6 +99,34 @@ class Solution:
 2. 双指针内的substring维持一个set，每次check右指针所指元素是否存在于set中，若存在则减小左指针，否则增加右指针。
 3. 左右指针包含的范围被称为sliding window, 我们需要记录该window的最大范围作为返回值
 
+## 11. Container With Most Water ##
+
+Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+Note: You may not slant the container and n is at least 2.
+
+```python
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        if len(height) <= 1:
+            return 0
+        left, right = 0, len(height) - 1
+        maxArea = float('-Inf')
+        while left < right:
+            current = min(height[left], height[right]) * (right - left)
+            if current > maxArea:
+                maxArea = current
+            if height[left] < height[right]:
+                left += 1
+            else:
+                right -= 1
+        return maxArea
+```
+
+The key idea is that when fixing two pointers, the only way to increase the area is to move the shorter one inside because the area is determined by shorter one and when moving towards inside the length will decrease.
+
+This problem can be considered by two pointers and greedy approach.
+
 ## 14. Longest Common Prefix ##
 
 ```python
@@ -156,6 +191,53 @@ class Solution:
 ```
 
 Key idea is first select one element, and choose two elements from the rest list to do two sums. Have to avoid duplicate when iterate both the first one and the second one.
+
+## 16. 3Sum Closest ##
+
+Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
+Example:
+
+Given array nums = [-1, 2, 1, -4], and target = 1.
+
+The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+
+```java
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int minSum = 0;
+        int minDiff = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length - 2; i++) {
+            int sum = target - nums[i];
+            int lo = i + 1, hi = nums.length - 1;
+            while (lo < hi) {
+                int temp = nums[lo] + nums[hi];
+                if (temp < sum) {
+                    if (sum - temp < minDiff) {
+                        minDiff = sum - temp;
+                        minSum = temp + nums[i];
+                    }
+                    while (lo < hi && nums[lo] == nums[lo+1]) lo++;
+                    lo++;
+                } else if (temp > sum) {
+                    if (temp - sum < minDiff) {
+                        minDiff = temp - sum;
+                        minSum = temp + nums[i];
+                    }
+                    while (lo < hi && nums[hi] == nums[hi-1]) hi--;
+                    hi--;
+                } else {
+                    return target;
+                }
+            }
+        }
+        return minSum;
+    }
+}
+```
+
+Similar to 3Sum, the key idea is to firstly sort, secondly fix a num and find other two in the remaining sorted array using two pointers.
 
 ## 26. Remove Duplicates from Sorted Array ##
 
@@ -234,6 +316,31 @@ class Solution(object):
 
 其中collections.defaultdict(list)可以将dict的value类型设为list，因此即使为空也能append。 tuple(sorted(s))是为了将sorted的list类型的字符串转换为不可变类型tuple，which is hashable。
 
+## 53. Maximum Subarray ##
+
+Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
+
+Example:
+
+Input: [-2,1,-3,4,-1,2,1,-5,4],
+Output: 6
+Explanation: [4,-1,2,1] has the largest sum = 6.
+
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        // optHelper[i] = Math.max(nums[i], optHelper[i-1] + nums[i]);
+        // opt[i] = Math.max(opt[i-1], optHelper[i]);
+        int optHelper = 0, opt = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            optHelper = Math.max(nums[i], optHelper + nums[i]);
+            opt = Math.max(opt, optHelper);
+        }
+        return opt;
+    }
+}
+```
+
 ## 66. Plus One ##
 
 ```python
@@ -291,6 +398,30 @@ class Solution:
 ```
 
 因为这个无法处理x = 0 的情况，即初始时lo = hi。
+
+## 70. Climbing Stairs ##
+
+You are climbing a stair case. It takes n steps to reach to the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+Note: Given n will be a positive integer.
+
+```java
+class Solution {
+    public int climbStairs(int n) {
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+}
+```
 
 ## 73. Set Matrix Zeroes ##
 
@@ -401,6 +532,43 @@ class Solution:
 
 ```
 
+## 118. Pascal's Triangle ##
+
+Given a non-negative integer numRows, generate the first numRows of Pascal's triangle.
+
+```python
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
+        result = [[1]*(i+1) for i in range(numRows)]
+        for i in range(1, numRows): # no need to care about first one otherwise index overflow
+            for j in range(1, i, 1): # only care about middle ones
+                result[i][j] = result[i-1][j-1] + result[i-1][j]
+            # result.append(temp)
+        return result
+```
+
+1. Python can init list with for loop inside, need to use this pythonic charac effieciently
+2. When using Python, be careful about the boundary of the range: [)
+
+## 119. Pascal's Triangle II ##
+
+Given a non-negative index k where k ≤ 33, return the kth index row of the Pascal's triangle.
+
+Note that the row index starts from 0.
+
+```python
+class Solution:
+    def getRow(self, rowIndex: int) -> List[int]:
+        pascal = [0]*(rowIndex + 1)
+        pascal[0] = 1
+        for i in range(1, rowIndex + 1):
+            for j in range(i, 0, -1):
+                pascal[j] += pascal[j-1]
+        return pascal
+```
+
+Need to care about the boundary cases when using python. 
+
 ## 121. Best Time to Buy and Sell Stock ##
 
 Say you have an array for which the ith element is the price of a given stock on day i.
@@ -428,7 +596,21 @@ class Solution:
         return maxProfit
 ```
 
+A DP approach:
 
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int min = Integer.MAX_VALUE;
+        int max = 0;
+        for (int i = 0; i < prices.length; i++) {
+            max = Math.max(max, prices[i] - min);
+            min = prices[i] < min ? prices[i] : min;
+        }
+        return max;
+    }
+}
+```
 
 ## 122. Best Time to Buy and Sell Stock II ##
 
@@ -564,6 +746,58 @@ class Solution:
 ```
 
 **Note**: 记住python dic.get(num, 0)这个操作，是如果有key就取出，没有就置零并返回0
+
+## 198. House Robber ##
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+
+Example 1:
+
+Input: [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+             Total amount you can rob = 1 + 3 = 4.
+
+```java
+// A iterative memo solution
+class Solution {
+    public int rob(int[] nums) {
+        // dp[i] = max(dp[i-2] + nums[i], dp[i-1])
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            dp[i] = Math.max(dp[i-2] + nums[i], dp[i-1]);
+        }
+        return dp[nums.length-1];
+    }
+}
+```
+
+```java
+// A iterative + 2 variables solution
+class Solution {
+    public int rob(int[] nums) {
+        // dp[i] = max(dp[i-2] + nums[i], dp[i-1])
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
+        int dp1 = nums[0];
+        int dp2 = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            int temp = dp2;
+            dp2 = Math.max(dp1 + nums[i], dp2);
+            dp1 = temp;
+        }
+        return dp2;
+    }
+}
+```
 
 ## 219. Contains Duplicate II ##
 
