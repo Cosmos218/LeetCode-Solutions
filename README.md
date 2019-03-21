@@ -5,19 +5,25 @@
 - [LeetCode](#leetcode)
     - [1.Two Sum](#1two-sum)
     - [3. Longest Substring Without Repeating Characters](#3-longest-substring-without-repeating-characters)
+    - [5. Longest Palindromic Substring](#5-longest-palindromic-substring)
     - [11. Container With Most Water](#11-container-with-most-water)
     - [14. Longest Common Prefix](#14-longest-common-prefix)
     - [15. 3Sum](#15-3sum)
     - [16. 3Sum Closest](#16-3sum-closest)
     - [26. Remove Duplicates from Sorted Array](#26-remove-duplicates-from-sorted-array)
     - [49. Group Anagrams](#49-group-anagrams)
+    - [50. Pow(x, n)](#50-powx-n)
     - [53. Maximum Subarray](#53-maximum-subarray)
+    - [62. Unique Paths](#62-unique-paths)
     - [66. Plus One](#66-plus-one)
+    - [67. Add Binary](#67-add-binary)
     - [69. Sqrt(x)](#69-sqrtx)
     - [70. Climbing Stairs](#70-climbing-stairs)
     - [73. Set Matrix Zeroes](#73-set-matrix-zeroes)
     - [88. Merge Sorted Array](#88-merge-sorted-array)
     - [98. Validate Binary Search Tree](#98-validate-binary-search-tree)
+    - [100. Same Tree](#100-same-tree)
+    - [102. Binary Tree Level Order Traversal](#102-binary-tree-level-order-traversal)
     - [104. Maximum Depth of Binary Tree](#104-maximum-depth-of-binary-tree)
     - [118. Pascal's Triangle](#118-pascals-triangle)
     - [119. Pascal's Triangle II](#119-pascals-triangle-ii)
@@ -26,6 +32,7 @@
     - [136. Single Number](#136-single-number)
     - [167. Two Sum II - Input array is sorted](#167-two-sum-ii---input-array-is-sorted)
     - [169. Majority Element](#169-majority-element)
+    - [189. Rotate Array](#189-rotate-array)
     - [198. House Robber](#198-house-robber)
     - [219. Contains Duplicate II](#219-contains-duplicate-ii)
     - [268. Missing Number](#268-missing-number)
@@ -35,11 +42,11 @@
     - [350. Intersection of Two Arrays II](#350-intersection-of-two-arrays-ii)
     - [414. Third Maximum Number](#414-third-maximum-number)
     - [448. Find All Numbers Disappeared in an Array](#448-find-all-numbers-disappeared-in-an-array)
+    - [450. Delete Node in a BST](#450-delete-node-in-a-bst)
     - [485. Max Consecutive Ones](#485-max-consecutive-ones)
     - [532. K-diff Pairs in an Array](#532-k-diff-pairs-in-an-array)
 
 <!-- /TOC -->
-
 ## 1.Two Sum ##
 
 ``` java
@@ -98,6 +105,39 @@ class Solution:
 1. 双指针指代substring范围
 2. 双指针内的substring维持一个set，每次check右指针所指元素是否存在于set中，若存在则减小左指针，否则增加右指针。
 3. 左右指针包含的范围被称为sliding window, 我们需要记录该window的最大范围作为返回值
+
+## 5. Longest Palindromic Substring ##
+
+Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() == 0) return "";
+        int lo = 0, hi = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expand(s, i, i);
+            int len2 = expand(s, i, i + 1);
+            int len = Math.max(len1, len2);
+            if (len > hi - lo) {
+                lo = i - (len - 1) / 2;
+                hi = i + len / 2;
+            }
+        }
+        return s.substring(lo, hi + 1);
+    }
+    private int expand(String s, int i, int j) {
+        while (i >= 0 && j < s.length() && s.charAt(i) == s.charAt(j)) {
+            i--;
+            j++;
+        }
+        return j - i - 1;
+    }
+}
+```
+
+Select start and end point yields O(n^2), check palindrome yields O(n). We use previous result to reduce check palindrome to O(1).
+In this code we have to be careful about corner cases.
 
 ## 11. Container With Most Water ##
 
@@ -316,6 +356,61 @@ class Solution(object):
 
 其中collections.defaultdict(list)可以将dict的value类型设为list，因此即使为空也能append。 tuple(sorted(s))是为了将sorted的list类型的字符串转换为不可变类型tuple，which is hashable。
 
+## 50. Pow(x, n) ##
+
+Implement pow(x, n), which calculates x raised to the power n (xn).
+
+```java
+class Solution {
+    public double myPow(double x, int n) {
+        if (n == 0) return 1;
+        if (n == 1) return x;
+        if (n >= 0) {
+            if (n % 2 == 0) {
+                double temp = myPow(x, n / 2);
+                return temp * temp;
+            } else {
+                double temp = myPow(x, (n - 1) / 2);
+                return temp * temp * x;
+            }
+        } else {
+            int m = 0 - n;
+            if (m < 0 && n < 0 || m > 0 && n > 0) {
+                n += 1;
+                m = 0 - n;
+                if (m % 2 == 0) {
+                    double temp = myPow(x, m / 2);
+                    return 1 / (temp * temp * x);
+                } else {
+                    double temp = myPow(x, (m - 1) / 2);
+                    return 1 / (temp * temp * x * x);
+            }
+            }
+            if (m % 2 == 0) {
+                double temp = myPow(x, m / 2);
+                return 1 / (temp * temp);
+            } else {
+                double temp = myPow(x, (m - 1) / 2);
+                return 1 / (temp * temp * x);
+            }
+        }
+    }
+}
+```
+
+A divide and conquer approach. To reduce memory use, replace
+
+```java
+double temp = myPow(x, m / 2);
+return 1 / (temp * temp);
+```
+
+by 
+
+```java
+return 1 / myPow(x*x, m)
+```
+
 ## 53. Maximum Subarray ##
 
 Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
@@ -341,6 +436,37 @@ class Solution {
 }
 ```
 
+## 62. Unique Paths ##
+
+A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+
+The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+
+How many possible unique paths are there?
+
+```java
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        dp[0][0] = 1;
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i] = 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+}
+```
+
+Easy dp. Stack overflow or arithmetic overflow when using factorial.
+
 ## 66. Plus One ##
 
 ```python
@@ -365,6 +491,37 @@ class Solution:
 ```
 
 基本数组操作
+
+## 67. Add Binary ##
+
+Given two binary strings, return their sum (also a binary string).
+
+The input strings are both non-empty and contains only characters 1 or 0.
+
+Example 1:
+
+Input: a = "11", b = "1"
+Output: "100"
+
+```java
+class Solution {
+    public String addBinary(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        int i = a.length() - 1, j = b.length() - 1;
+        int carry = 0;
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if (i >= 0) sum += a.charAt(i--) - '0';
+            if (j >= 0) sum += b.charAt(j--) - '0';
+            sb.append(sum % 2);
+            carry = sum / 2;
+        }
+        if (carry == 1)
+            sb.append(1);
+        return sb.reverse().toString();
+    }
+}
+```
 
 ## 69. Sqrt(x) ##
 
@@ -513,6 +670,71 @@ class Solution:
 ```
 
 法1：前序遍历输出必须是从大到小。法2：递归调用，维持一个上界和下界比较
+
+## 100. Same Tree ##
+
+Given two binary trees, write a function to check if they are the same or not.
+
+Two binary trees are considered the same if they are structurally identical and the nodes have the same value.
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) return true;
+        if (p == null || q == null) return false;
+        if (p.val != q.val) return false;
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+}
+```
+
+## 102. Binary Tree Level Order Traversal ##
+
+Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new LinkedList<>();
+        Queue<TreeNode> que = new LinkedList<>();
+        if (root == null) return result;
+        que.add(root);
+        while (!que.isEmpty()) {
+            int cnt = que.size();
+            List<Integer> resultTemp = new LinkedList<>();
+            for (int i = 0; i < cnt; i++) {
+                TreeNode temp = que.peek();
+                if (temp.left != null) que.add(temp.left);
+                if (temp.right != null) que.add(temp.right);
+                resultTemp.add(temp.val);
+                que.poll();
+            }
+            result.add(resultTemp);
+        }
+        return result;
+    }
+}
+```
+
+In order to store each level's values in a separate list, the queue's size before each deleting is the count of that level.
 
 ## 104. Maximum Depth of Binary Tree ##
 
@@ -746,6 +968,62 @@ class Solution:
 ```
 
 **Note**: 记住python dic.get(num, 0)这个操作，是如果有key就取出，没有就置零并返回0
+
+```java
+class Solution {
+    public int majorityElement(int[] nums) {
+        int cnt = 0, majority = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            if (cnt == 0)
+                majority = nums[i];
+            cnt += nums[i] == majority ? 1 : -1;
+            if (cnt > nums.length/2)
+                return majority;
+        }
+        return majority;
+    }
+}
+```
+
+Boyer-Moore Voting Algorithm:
+We first assume majority is nums[0] and record a count. When we iterate through the array, if we meet majority, then count++, else count--. If the count goes to 0, then we choose the first one of the remaining array to be the majority and begin again. The key idea is that the majority will never be eliminated by the rest, while the rest may be eliminated by themselves.
+
+## 189. Rotate Array ##
+
+Given an array, rotate the array to the right by k steps, where k is non-negative.
+
+Example 1:
+
+Input: [1,2,3,4,5,6,7] and k = 3
+Output: [5,6,7,1,2,3,4]
+Explanation:
+rotate 1 steps to the right: [7,1,2,3,4,5,6]
+rotate 2 steps to the right: [6,7,1,2,3,4,5]
+rotate 3 steps to the right: [5,6,7,1,2,3,4]
+
+```java
+class Solution {
+    public void rotate(int[] nums, int k) {
+        k %= nums.length;
+        reverse(nums, 0, nums.length-1);
+        reverse(nums, 0, k-1);
+        reverse(nums, k, nums.length-1);
+    }
+    
+    private void reverse(int[] nums, int begin, int end) {
+        int temp;
+        while (begin < end) {
+            temp = nums[begin];
+            nums[begin] = nums[end];
+            nums[end] = temp;
+            begin++;
+            end--;
+        }
+    }
+}
+```
+
+**Note**: k %= nums.length to avoid index out of bound.
 
 ## 198. House Robber ##
 
@@ -1076,6 +1354,44 @@ class Solution:
                 result.append(i + 1)
         return result
 ```
+
+## 450. Delete Node in a BST ##
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) return null;
+        if (root.val < key) root.right = deleteNode(root.right, key);
+        else if (root.val > key) root.left = deleteNode(root.left, key);
+        else {
+            if (root.left == null) return root.right;
+            else if (root.right == null) return root.left;
+            int min = findMin(root.right);
+            root.val = min;
+            root.right = deleteNode(root.right, min);
+        }
+        return root;
+    }
+    
+    private int findMin(TreeNode root) {
+        while (root.left != null)
+            root = root.left;
+        return root.val;
+    }
+}
+```
+
+After finding the key, set the root.val to min of the right subtree, and recursively delete the min in the right sub tree.
+This approach is better than what is taught in Algorithm 4ed.
 
 ## 485. Max Consecutive Ones ##
 
