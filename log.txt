@@ -180,3 +180,47 @@ public class Solution {
 
     }
 }
+
+114. Flatten Binary Tree to Linked List
+1: Recursion idea:
+class Solution {
+    public void flatten(TreeNode root) {
+        if (root == null) return;
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        
+        flatten(left);
+        flatten(right);
+        
+        root.right = left;
+        root.left = null;
+        
+        TreeNode cur = root;
+        while (cur.right != null) cur = cur.right;
+        cur.right = right;
+    }
+}
+2. Another solution: post-order traversal
+
+107. Binary Tree Level Order Traversal II
+class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> result = new LinkedList();
+        Queue<TreeNode> que = new LinkedList();
+        if (root == null) return result;
+        que.add(root);
+        while (que.size() > 0) {
+            int cnt = que.size();
+            List<Integer> list = new LinkedList();
+            for (int i = 0; i < cnt; i++) {
+                TreeNode temp = que.poll();
+                list.add(temp.val);
+                if (temp.left != null) que.add(temp.left);
+                if (temp.right != null) que.add(temp.right);
+            }
+            result.add(0, list);
+        }
+        return result;
+    }
+}
+Idea is right, but be aware of the corner case that root is null.
