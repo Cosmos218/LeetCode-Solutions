@@ -82,3 +82,101 @@ class Solution {
     }
 }
 
+05/24/2019
+110. Balanced Binary Tree
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        return helper(root) == -1 ? false : true;
+    }
+    
+    public int helper(TreeNode root) {
+        if (root == null) return 0;
+        int left = helper(root.left);
+        int right = helper(root.right);
+        if (left == -1 || right == -1) return -1;
+        if (Math.abs(left - right) > 1) return -1;
+        return Math.max(left, right) + 1;
+    }
+}
+Key is to use -1 to mark as imbalanced.
+
+111. Minimum Depth of Binary Tree
+class Solution {
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+        if (root.left == null && root.right == null) return 1;
+        if (root.left == null) return minDepth(root.right) + 1;
+        if (root.right == null) return minDepth(root.left) + 1;
+        return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
+    }
+}
+Be careful of what is a leaf node -> the corner cases.
+
+112. Path Sum
+class Solution {
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null) return false;
+        if (root.left == null && root.right == null && sum == root.val) return true;
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+    }
+}
+Recursion idea; and notice the def of leaf node.
+
+113. Path Sum II
+My solution:
+class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        if (root == null) return new LinkedList();
+        if (root.left == null && root.right == null && sum == root.val) {
+            List<Integer> list = new LinkedList();
+            list.add(root.val);
+            List<List<Integer>> result = new LinkedList();
+            result.add(list);
+            return result;
+        }
+        return mergeList(root.val, pathSum(root.left, sum - root.val), pathSum(root.right, sum - root.val));
+    }
+    
+    private List<List<Integer>> mergeList(int head, List<List<Integer>> left, List<List<Integer>> right) {
+        for (List<Integer> list : right) {
+            left.add(list);
+        }
+        for (List<Integer> list : left) {
+            list.add(0, head);
+        }
+        return left;
+    }
+}
+
+Only beats 33%.
+
+Another solution:
+Pass the reference of the result list to each recursion. When reaching a leaf node with correct sum, add the path to result. Monitor the path(remove elements appropriately).
+public class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        dfs(root, sum, res, path);
+        return res;
+    }
+
+    public void dfs(TreeNode root, int sum, List<List<Integer>> res, List<Integer> path){
+        if(root==null) return;
+        path.add(root.val);
+
+        if(root.left==null && root.right==null ){
+            if(root.val==sum)
+                res.add(new ArrayList<Integer>(path));
+            return;
+        }
+        if(root.left!=null) {
+            dfs(root.left,sum-root.val,res,path);
+            path.remove(path.size()-1);
+        }
+        if(root.right!=null) {
+            dfs(root.right,sum-root.val,res,path);
+            path.remove(path.size()-1);
+        }
+
+    }
+}
