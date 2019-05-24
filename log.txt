@@ -224,3 +224,35 @@ class Solution {
     }
 }
 Idea is right, but be aware of the corner case that root is null.
+
+94. Binary Tree Inorder Traversal
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList();
+        helper(root, result);
+        return result;
+    }
+    
+    private void helper(TreeNode root, List<Integer> result) {
+        if (root == null) return;
+        helper(root.left, result);
+        result.add(root.val);
+        helper(root.right, result);
+    }
+}
+
+96. Unique Binary Search Trees
+class Solution {
+    public int numTrees(int n) {
+        int[] DP = new int[n+1];
+        DP[0] = 1;
+        DP[1] = 1;
+        for (int i = 2; i <=n; i++) {
+            for (int j = 1; j <= i; j++) {
+                DP[i] += DP[j-1] * DP[i-j];
+            }
+        }
+        return DP[n];
+    }
+}
+Key idea: divide the tree into two halves with different numbers, then the multiplication of the solutions to the both halves is the answer.
