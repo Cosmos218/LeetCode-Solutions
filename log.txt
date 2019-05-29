@@ -257,6 +257,7 @@ class Solution {
 }
 Key idea: divide the tree into two halves with different numbers, then the multiplication of the solutions to the both halves is the answer.
 
+05/29
 31. Next Permutation
 class Solution {
     public void nextPermutation(int[] nums) {
@@ -290,3 +291,19 @@ class Solution {
     }
 }
 Key idea: find the first element in non-decreasing order from the tail, swap it to the next larger element and reverse the rest.
+
+206. Reverse Linked List
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode ptr = head;
+        ListNode pre = null;
+        while (ptr != null) {
+            ListNode temp = ptr.next;
+            ptr.next = pre;
+            pre = ptr;
+            ptr = temp;
+        }
+        return pre;
+    }
+}
+Same as iterative sample solution
