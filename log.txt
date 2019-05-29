@@ -256,3 +256,37 @@ class Solution {
     }
 }
 Key idea: divide the tree into two halves with different numbers, then the multiplication of the solutions to the both halves is the answer.
+
+31. Next Permutation
+class Solution {
+    public void nextPermutation(int[] nums) {
+        int pre = Integer.MIN_VALUE;
+        int j = nums.length - 1;
+        for (; j >= 0 && nums[j] >= pre; j--) {
+            pre = nums[j];
+        }
+        if (j == -1) {
+            reverse(nums, 0, nums.length-1);
+            return;
+        } 
+        int i = nums.length - 1;
+        for (; nums[i] <= nums[j]; i--) ;
+        swap(nums, i, j);
+        reverse(nums, j+1, nums.length-1);
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+    
+    private void reverse(int[] nums, int i, int j) {
+        while (i < j) {
+            swap(nums, i, j);
+            i++;
+            j--;
+        }
+    }
+}
+Key idea: find the first element in non-decreasing order from the tail, swap it to the next larger element and reverse the rest.
