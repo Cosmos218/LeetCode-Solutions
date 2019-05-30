@@ -447,3 +447,28 @@ class Solution {
     }
 }
 Basic and easy dp.
+
+39. Combination Sum
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> tempList = new ArrayList<>();
+        backtrack(result, tempList, candidates, 0, target);
+        return result;
+    }
+    
+    private void backtrack(List<List<Integer>> result, List<Integer> tempList, int[] candidates, int start, int sum) {
+        if (sum == 0) {
+            result.add(new ArrayList<>(tempList));
+            return;
+        } else if (sum < 0) {
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            tempList.add(candidates[i]);
+            backtrack(result, tempList, candidates, i, sum - candidates[i]);
+            tempList.remove(tempList.size() - 1);
+        }
+    }
+}
+Need more practice about backtracking
